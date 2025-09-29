@@ -5,18 +5,25 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
-import { Mail, Phone, MapPin, Send, Calendar, Globe, MessageCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Calendar, Globe, MessageCircle, Loader2 } from 'lucide-react';
 import { personalInfo } from '../data/portfolioData';
 import { useToast } from '../hooks/use-toast';
+import emailjs from '@emailjs/browser';
 
 const Contact = () => {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
+    from_name: '',
+    from_email: '',
     subject: '',
     message: ''
   });
+
+  // ⚠️ REMPLACEZ CES VALEURS PAR VOS VRAIES CLÉS EmailJS
+  const EMAIL_SERVICE_ID = 'VOTRE_SERVICE_ID';
+  const EMAIL_TEMPLATE_ID = 'VOTRE_TEMPLATE_ID';
+  const EMAIL_PUBLIC_KEY = 'VOTRE_PUBLIC_KEY';
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -26,24 +33,49 @@ const Contact = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Mock form submission for static deployment
-    console.log('Form submitted:', formData);
-    
-    toast({
-      title: "Message Sent Successfully!",
-      description: "Thank you for your message. I'll get back to you within 24 hours.",
-    });
+    setIsSubmitting(true);
 
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      subject: '',
-      message: ''
-    });
+    try {
+      // Envoyer l'email via EmailJS
+      const result = await emailjs.send(
+        EMAIL_SERVICE_ID,
+        EMAIL_TEMPLATE_ID,
+        {
+          from_name: formData.from_name,
+          from_email: formData.from_email,
+          subject: formData.subject,
+          message: formData.message,
+          to_email: 'youns.benchrifa@gmail.com'
+        },
+        EMAIL_PUBLIC_KEY
+      );
+
+      if (result.status === 200) {
+        toast({
+          title: "Message envoyé avec succès !",
+          description: "Merci pour votre message. Je vous répondrai dans les 24 heures.",
+        });
+
+        // Reset form
+        setFormData({
+          from_name: '',
+          from_email: '',
+          subject: '',
+          message: ''
+        });
+      }
+    } catch (error) {
+      console.error('Erreur EmailJS:', error);
+      toast({
+        title: "Erreur lors de l'envoi",
+        description: "Une erreur s'est produite. Veuillez réessayer ou me contacter directement.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactMethods = [
@@ -52,22 +84,22 @@ const Contact = () => {
       label: 'Email',
       value: personalInfo.email,
       href: `mailto:${personalInfo.email}`,
-      description: 'Professional inquiries and collaboration',
+      description: 'Demandes professionnelles et collaboration',
       color: 'from-blue-500 to-blue-600'
     },
     {
       icon: Phone,
-      label: 'Phone',
+      label: 'Téléphone',
       value: personalInfo.phone,
       href: `tel:${personalInfo.phone}`,
-      description: 'Direct line for urgent matters',
+      description: 'Ligne directe pour les urgences',
       color: 'from-green-500 to-green-600'
     },
     {
       icon: MapPin,
-      label: 'Location',
-      value: 'Marrakech, Morocco',
-      description: 'Available for local and remote opportunities',
+      label: 'Localisation',
+      value: 'Marrakech, Maroc',
+      description: 'Disponible pour des opportunités locales et à distance',
       color: 'from-purple-500 to-purple-600'
     }
   ];
@@ -83,15 +115,15 @@ const Contact = () => {
           {/* Section Header */}
           <div className="text-center mb-16">
             <Badge variant="outline" className="mb-4 text-blue-600 border-blue-200 bg-blue-50">
-              Get In Touch
+              Contactez-moi
             </Badge>
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-              Let's Start a 
+              Commençons une 
               <span className="text-blue-600 block lg:inline lg:ml-3">Conversation</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Ready to discuss new opportunities, technical challenges, or potential collaborations. 
-              I'm always interested in connecting with fellow professionals and exploring innovative projects.
+              Prêt à discuter de nouvelles opportunités, défis techniques, ou collaborations potentielles. 
+              J'aime toujours me connecter avec des professionnels et explorer des projets innovants.
             </p>
             <div className="w-24 h-1 bg-blue-600 mx-auto rounded-full mt-6"></div>
           </div>
@@ -113,24 +145,24 @@ const Contact = () => {
                           <MessageCircle className="h-6 w-6 text-white" />
                         </div>
                         <div>
-                          <h3 className="text-xl font-bold">Ready to Connect</h3>
-                          <p className="text-blue-200 text-sm">Professional & Collaborative</p>
+                          <h3 className="text-xl font-bold">Prêt à me connecter</h3>
+                          <p className="text-blue-200 text-sm">Professionnel & Collaboratif</p>
                         </div>
                       </div>
                       
                       <p className="text-white/90 leading-relaxed mb-6">
-                        Whether you're looking for technical expertise, problem-solving capabilities, 
-                        or a dedicated professional for your team, I'm here to help drive your projects forward.
+                        Que vous cherchiez une expertise technique, des capacités de résolution de problèmes, 
+                        ou un professionnel dévoué pour votre équipe, je suis là pour faire avancer vos projets.
                       </p>
                       
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div className="flex items-center space-x-2">
                           <Calendar className="h-4 w-4 text-blue-300" />
-                          <span className="text-white/90">Available Now</span>
+                          <span className="text-white/90">Disponible maintenant</span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Globe className="h-4 w-4 text-blue-300" />
-                          <span className="text-white/90">Remote Ready</span>
+                          <span className="text-white/90">Télétravail OK</span>
                         </div>
                       </div>
                     </div>
@@ -173,11 +205,11 @@ const Contact = () => {
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-3 mb-2">
                     <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="font-semibold text-gray-900">Quick Response Time</span>
+                    <span className="font-semibold text-gray-900">Réponse rapide</span>
                   </div>
                   <p className="text-gray-700 text-sm">
-                    I typically respond to professional inquiries within 24 hours. 
-                    For urgent matters, please call directly.
+                    Je réponds généralement aux demandes professionnelles dans les 24 heures. 
+                    Pour les urgences, appelez-moi directement.
                   </p>
                 </CardContent>
               </Card>
@@ -189,42 +221,44 @@ const Contact = () => {
                 <CardContent className="p-8">
                   <div className="mb-8">
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                      Send me a message
+                      Envoyez-moi un message
                     </h3>
                     <p className="text-gray-600">
-                      Fill out the form below and I'll get back to you as soon as possible.
+                      Remplissez le formulaire ci-dessous et je vous répondrai dès que possible.
                     </p>
                   </div>
 
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label htmlFor="name" className="text-sm font-medium text-gray-700">
-                          Full Name *
+                        <Label htmlFor="from_name" className="text-sm font-medium text-gray-700">
+                          Nom complet *
                         </Label>
                         <Input
-                          id="name"
-                          name="name"
-                          value={formData.name}
+                          id="from_name"
+                          name="from_name"
+                          value={formData.from_name}
                           onChange={handleInputChange}
-                          placeholder="Your full name"
+                          placeholder="Votre nom complet"
                           required
+                          disabled={isSubmitting}
                           className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                         />
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                          Email Address *
+                        <Label htmlFor="from_email" className="text-sm font-medium text-gray-700">
+                          Adresse Email *
                         </Label>
                         <Input
-                          id="email"
-                          name="email"
+                          id="from_email"
+                          name="from_email"
                           type="email"
-                          value={formData.email}
+                          value={formData.from_email}
                           onChange={handleInputChange}
-                          placeholder="your.email@example.com"
+                          placeholder="votre.email@exemple.com"
                           required
+                          disabled={isSubmitting}
                           className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                         />
                       </div>
@@ -232,15 +266,16 @@ const Contact = () => {
 
                     <div className="space-y-2">
                       <Label htmlFor="subject" className="text-sm font-medium text-gray-700">
-                        Subject *
+                        Sujet *
                       </Label>
                       <Input
                         id="subject"
                         name="subject"
                         value={formData.subject}
                         onChange={handleInputChange}
-                        placeholder="What's this about?"
+                        placeholder="De quoi s'agit-il ?"
                         required
+                        disabled={isSubmitting}
                         className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
@@ -254,8 +289,9 @@ const Contact = () => {
                         name="message"
                         value={formData.message}
                         onChange={handleInputChange}
-                        placeholder="Tell me more about your project, opportunity, or question..."
+                        placeholder="Parlez-moi de votre projet, opportunité, ou question..."
                         required
+                        disabled={isSubmitting}
                         rows={6}
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 resize-none"
                       />
@@ -265,10 +301,20 @@ const Contact = () => {
                       <Button 
                         type="submit"
                         size="lg"
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300"
+                        disabled={isSubmitting}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                       >
-                        Send Message
-                        <Send className="ml-2 h-5 w-5" />
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                            Envoi en cours...
+                          </>
+                        ) : (
+                          <>
+                            Envoyer le message
+                            <Send className="ml-2 h-5 w-5" />
+                          </>
+                        )}
                       </Button>
                     </div>
                   </form>
@@ -276,8 +322,8 @@ const Contact = () => {
                   {/* Form Footer */}
                   <div className="mt-8 pt-6 border-t border-gray-100">
                     <p className="text-sm text-gray-500 text-center">
-                      By sending this message, you agree that I may contact you regarding 
-                      professional opportunities and collaborations.
+                      En envoyant ce message, vous acceptez que je puisse vous contacter concernant 
+                      des opportunités professionnelles et collaborations.
                     </p>
                   </div>
                 </CardContent>
