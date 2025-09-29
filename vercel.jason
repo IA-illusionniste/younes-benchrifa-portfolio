@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "name": "younes-benchrifa-portfolio",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "buildCommand": "yarn build",
+  "devCommand": "yarn start",
+  "installCommand": "yarn install"
+}
