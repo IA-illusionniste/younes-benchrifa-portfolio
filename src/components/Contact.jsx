@@ -21,9 +21,9 @@ const Contact = () => {
   });
 
   // ⚠️ REMPLACEZ CES VALEURS PAR VOS VRAIES CLÉS EmailJS
-  const EMAIL_SERVICE_ID = 'VOTRE_SERVICE_ID';
-  const EMAIL_TEMPLATE_ID = 'VOTRE_TEMPLATE_ID';
-  const EMAIL_PUBLIC_KEY = 'VOTRE_PUBLIC_KEY';
+  const EMAIL_SERVICE_ID = 'service_ynl2u3g';
+  const EMAIL_TEMPLATE_ID = 'template_83no4op';
+  const EMAIL_PUBLIC_KEY = 'aaZZT1FuSSELphR_8';
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
